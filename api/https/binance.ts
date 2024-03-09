@@ -1,9 +1,22 @@
 import axios from 'axios'
-import { ITickerPrice } from '../../types/binance'
+import { ITicker, ITickerPrice } from '../../types/binance'
 
 const baseUrl = 'https://data-api.binance.vision'
 
 export const getTickerPrices = () => {
   const url = `${baseUrl}/api/v3/ticker/price`
-  return axios.get<ITickerPrice[]>(url)
+  return axios.get<ITickerPrice[]>(url).then((res) => {
+    // logger for debugging purposes
+    console.log('getTickerPrices', res.status)
+    return res
+  })
+}
+
+export const getTicker = (symbol: string) => {
+  const url = `${baseUrl}/api/v3/ticker/24hr?symbol=${symbol}&type=MINI`
+  return axios.get<ITicker>(url).then((res) => {
+    // logger for debugging purposes
+    console.log('getTicker', symbol, res.status)
+    return res
+  })
 }
