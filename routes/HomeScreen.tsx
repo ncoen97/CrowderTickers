@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatList, Text, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { RootStackParamList } from '../App' // Adjust the import path as necessary
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -22,8 +22,15 @@ const HomeScreen = () => {
       data={[{ symbol: 'BTC', price: '1000' }]}
       renderItem={renderTicker}
       keyExtractor={(item) => item.symbol}
+      style={styles.root}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  root: {
+    padding: 24,
+  },
+})
 
 export default HomeScreen

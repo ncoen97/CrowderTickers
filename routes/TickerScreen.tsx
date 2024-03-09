@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
 
@@ -10,10 +10,16 @@ const TickerScreen = () => {
   const { symbol } = route.params
 
   return (
-    <View>
+    <View style={styles.root}>
       <Text>Ticker ID: {symbol}</Text>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  root: {
+    padding: 24,
+  },
+})
 
 export default TickerScreen
