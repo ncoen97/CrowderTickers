@@ -7,7 +7,9 @@ import { useQuery, useRealm } from '@realm/react'
 import { TickerPrice } from '../storage/models'
 import { getTickerPrices } from '../api/https/binance'
 import { storeTickerPrices } from '../storage/crud'
-import { ITickerPrice } from '../types/binance'
+import { IStreamMiniTicker, ITickerPrice } from '../types/binance'
+import { useWebSocket } from '../hooks/useWebSocket'
+import { baseUrl, mapStreamTickerPrices } from '../api/websockets/binance'
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>
 
@@ -17,6 +19,15 @@ const HomeScreen = () => {
   const realm = useRealm()
   const tickerPrices = useQuery(TickerPrice)
   const navigation = useNavigation<HomeScreenNavigationProp>()
+
+  const onTickerPricesUpdate = useCallback(
+    (data: IStreamMiniTicker[]) => storeTickerPrices(realm, mapStreamTickerPrices(data)),
+    // Don't need to update this callback every time the realm instance changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+
+  useWebSocket(`${baseUrl}/!miniTicker@arr`, onTickerPricesUpdate)
 
   const renderTicker = useCallback(
     ({ item }: { item: ITickerPrice }) => (
@@ -30,8 +41,11 @@ const HomeScreen = () => {
   )
 
   useEffect(() => {
+    // We get the TickePrices on initial load
     getTickerPrices().then(({ data }) => storeTickerPrices(realm, data))
-  }, [realm])
+    // Don't need to update this callback every time the realm instance changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <FlatList

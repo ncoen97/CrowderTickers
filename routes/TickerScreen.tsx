@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
@@ -6,6 +6,8 @@ import { useObject, useRealm } from '@realm/react'
 import { Ticker } from '../storage/models'
 import { getTicker } from '../api/https/binance'
 import { storeTicker } from '../storage/crud'
+import { useWebSocket } from '../hooks/useWebSocket'
+import { baseUrl } from '../api/websockets/binance'
 
 type TickerScreenRouteProp = RouteProp<RootStackParamList, 'Ticker'>
 
@@ -15,9 +17,21 @@ const TickerScreen = () => {
   const { symbol } = route.params
   const tickerDetails = useObject(Ticker, symbol)
 
+  const onTickerUpdate = useCallback(
+    (data: any) => storeTicker(realm, data),
+    // Don't need to update this callback every time the realm instance changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
+
+  useWebSocket(`${baseUrl}/${symbol}@miniTicker`, onTickerUpdate)
+
   useEffect(() => {
+    // We get the Ticke on initial load
     getTicker(symbol).then(({ data }) => storeTicker(realm, data))
-  }, [realm, symbol])
+    // Don't need to update this callback every time the realm instance changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol])
 
   return (
     <View style={styles.root}>
