@@ -2,6 +2,7 @@ import BackgroundFetch from 'react-native-background-fetch'
 import { getTickerPrices } from '../api/https/binance'
 import { storeTickerPrices } from '../storage/crud'
 import { realmConfig } from '../storage/realmConfig'
+import Realm from 'realm'
 
 const onEvent = async (taskId: string) => {
   console.log('[BackgroundFetch] task: ', taskId)
