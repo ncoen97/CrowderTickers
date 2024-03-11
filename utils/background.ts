@@ -1,17 +1,19 @@
 import BackgroundFetch from 'react-native-background-fetch'
-import { getTickerPrices } from '../api/https/binance'
-import { storeTickerPrices } from '../storage/crud'
+import { getTickers } from '../api/https/binance'
+import { storeTickers } from '../storage/crud'
 import { realmConfig } from '../storage/realmConfig'
 import Realm from 'realm'
 
 const onEvent = async (taskId: string) => {
   console.log('[BackgroundFetch] task: ', taskId)
 
-  const tickerPrices = await getTickerPrices()
+  const tickers = await getTickers()
 
   const realm = await Realm.open(realmConfig)
 
-  storeTickerPrices(realm, tickerPrices.data)
+  storeTickers(realm, tickers.data)
+
+  realm.close()
 
   BackgroundFetch.finish(taskId)
 }

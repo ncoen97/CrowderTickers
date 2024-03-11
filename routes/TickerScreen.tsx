@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
 import { useObject, useRealm } from '@realm/react'
-import { Ticker } from '../storage/models'
+import { Ticker, TickerPrice } from '../storage/models'
 import { getTicker } from '../api/https/binance'
 import { storeTicker } from '../storage/crud'
 import { useWebSocket } from '../hooks/useWebSocket'
@@ -16,6 +16,7 @@ const TickerScreen = () => {
   const route = useRoute<TickerScreenRouteProp>()
   const { symbol } = route.params
   const tickerDetails = useObject(Ticker, symbol)
+  const tickerPrice = useObject(TickerPrice, symbol)
 
   const onTickerUpdate = useCallback(
     (data: any) => storeTicker(realm, data),
@@ -29,14 +30,14 @@ const TickerScreen = () => {
   useEffect(() => {
     // We get the Ticke on initial load
     getTicker(symbol).then(({ data }) => storeTicker(realm, data))
-    // Don't need to update this callback every time the realm instance changes.
+    // Don't need to run this effect every time the realm instance changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol])
 
   return (
     <View style={styles.root}>
       <Text>Ticker ID: {symbol}</Text>
-      <Text>{JSON.stringify(tickerDetails, null, 2)}</Text>
+      <Text>{JSON.stringify(tickerDetails || tickerPrice, null, 2)}</Text>
     </View>
   )
 }

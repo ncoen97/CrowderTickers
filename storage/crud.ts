@@ -16,3 +16,14 @@ export const storeTicker = (realm: Realm, data: ITicker) => {
     realm.create('Ticker', data, Realm.UpdateMode.Modified)
   })
 }
+
+export const storeTickers = (realm: Realm, data: ITicker[]) => {
+  realm.write(() => {
+    console.log(Date.now(), 'Storing Tickers')
+    data.forEach((ticker) => {
+      console.log(ticker.symbol)
+      realm.create('Ticker', ticker, Realm.UpdateMode.Modified)
+      realm.create('TickerPrice', { symbol: ticker.symbol, price: ticker.lastPrice }, Realm.UpdateMode.Modified)
+    })
+  })
+}

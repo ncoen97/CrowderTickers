@@ -43,7 +43,7 @@ const HomeScreen = () => {
   useEffect(() => {
     // We get the TickePrices on initial load
     getTickerPrices().then(({ data }) => storeTickerPrices(realm, data))
-    // Don't need to update this callback every time the realm instance changes.
+    // Don't need to run this effect every time the realm instance changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
